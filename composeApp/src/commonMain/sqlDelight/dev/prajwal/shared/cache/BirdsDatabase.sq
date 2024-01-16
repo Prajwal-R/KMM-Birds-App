@@ -1,0 +1,16 @@
+CREATE TABLE Birds (
+    category TEXT,
+    path TEXT,
+    author TEXT
+);
+
+insertBirds :
+INSERT INTO Birds(category, path, author)
+VALUES(?, ?, ?);
+
+removeAllBirds:
+DELETE FROM Birds;
+
+selectAllBirds:
+SELECT Birds.*
+FROM Birds;
