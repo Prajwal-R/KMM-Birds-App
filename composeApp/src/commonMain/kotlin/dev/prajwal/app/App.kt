@@ -36,10 +36,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import dev.prajwal.app.BirdsViewModel.Companion.BASE_URL
+import dev.prajwal.shared.di.ViewModelDependencies.getBirdsViewModel
+import dev.prajwal.shared.model.BirdImage
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
-import dev.prajwal.shared.model.BirdImage
-import dev.prajwal.shared.di.ViewModelDependencies.getBirdsViewModel
 
 @Composable
 internal fun App() {
@@ -64,7 +64,7 @@ fun BirdTheme(content: @Composable () -> Unit) {
 @Composable
 private fun BirdsPage(viewModel: BirdsViewModel = getBirdsViewModel()) {
     val uiState by viewModel.uiState.collectAsState()
-
+    val uiIntent = viewModel::dispatch
     Column(
         modifier = Modifier.fillMaxSize().safeDrawingPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -90,7 +90,7 @@ private fun BirdsPage(viewModel: BirdsViewModel = getBirdsViewModel()) {
                 Button(
                     modifier = Modifier.height(32.dp).fillMaxSize().weight(1f),
                     onClick = {
-                        viewModel.selectCategory(category)
+                        uiIntent(BirdsScreenIntent.OnCategorySelected(category))
                     },
                     shape = RoundedCornerShape(16.dp),
                     elevation =
@@ -119,9 +119,9 @@ private fun BirdsPage(viewModel: BirdsViewModel = getBirdsViewModel()) {
                                 isSelected = it == uiState.selectedImage,
                                 onAction = { selectedImage ->
                                     if (uiState.selectedImage != selectedImage) {
-                                        viewModel.onSelectImage(selectedImage)
+                                        uiIntent(BirdsScreenIntent.OnBirdSelected(selectedImage))
                                     } else {
-                                        viewModel.onSelectImage(null)
+                                        uiIntent(BirdsScreenIntent.OnBirdSelected(null))
                                     }
                                 },
                             )
@@ -131,7 +131,13 @@ private fun BirdsPage(viewModel: BirdsViewModel = getBirdsViewModel()) {
                             BirdImageCell(
                                 image = it,
                                 isSelected = it == uiState.selectedImage,
-                                onAction = { selectedImage -> viewModel.onSelectImage(selectedImage) },
+                                onAction = { selectedImage ->
+                                    if (uiState.selectedImage != selectedImage) {
+                                        uiIntent(BirdsScreenIntent.OnBirdSelected(selectedImage))
+                                    } else {
+                                        uiIntent(BirdsScreenIntent.OnBirdSelected(null))
+                                    }
+                                },
                             )
                         }
                     }

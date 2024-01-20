@@ -110,10 +110,8 @@ buildConfig {
 
 sqldelight {
     databases {
-        create("MyDatabase") {
-            // Database configuration here.
-            // https://cashapp.github.io/sqldelight
-            packageName.set("dev.prajwal.app.db")
+        create("BirdsDatabase") {
+            packageName.set("dev.prajwal.shared.cache")
         }
     }
 }
